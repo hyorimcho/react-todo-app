@@ -4,11 +4,16 @@ import Lists from "./components/Lists";
 import Form from "./components/Form";
 
 export default function App() {
-  const [todoData, setTodoData] = useState([]);
+  const initialTodoData = localStorage.getItem("todoData")
+    ? JSON.parse(localStorage.getItem("todoData"))
+    : [];
+
+  const [todoData, setTodoData] = useState(initialTodoData);
   const [value, setValue] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const newTodoData = {
       id: Date.now(),
       title: value,
@@ -16,7 +21,15 @@ export default function App() {
     };
 
     setTodoData((prev) => [...prev, newTodoData]);
+    localStorage.setItem(
+      "todoData",
+      JSON.stringify([...todoData, newTodoData])
+    );
     setValue("");
+  };
+
+  const handleRemoveClick = (e) => {
+    setTodoData([]);
   };
 
   return (
@@ -24,6 +37,7 @@ export default function App() {
       <div className="w-full p-6 m-4 bg-white rounded shadow md:max-w-lg md:w=3/4 lg:w-3/4 lg:max-w-lg">
         <div className="flex justify-between mb-3">
           <h1>할 일 목록🐬</h1>
+          <button onClick={handleRemoveClick}>clear</button>
         </div>
         <Lists todoData={todoData} setTodoData={setTodoData} />
         <Form value={value} setValue={setValue} handleSubmit={handleSubmit} />
